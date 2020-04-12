@@ -1,0 +1,63 @@
+# encoding=utf-8
+import requests
+from lxml import etree
+
+
+headers = {
+    'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3314.0 Safari/537.36 SE 2.X MetaSr 1.0'
+}
+#获取职位信息
+def parse_massage_page(value):
+    response = requests.get(value, headers=headers)
+    # 解码爬取到的文件,gbk:解码方式
+    text = response.content.decode('gbk')
+    # 解析爬取得文件
+    html = etree.HTML(text)
+    position = html.xpath('//*[@id="resultList"]/div[4]/p/span/a/@title')
+    # print(position)
+
+# 获取网页源代码并对其解码
+def spider(url,chengshi,zhiwei):
+    response = requests.get(url, headers=headers)
+    # 解码爬取到的文件,gbk:解码方式
+    text = response.content.decode('gbk')
+
+
+    #获取职位名
+
+    html = etree.HTML(text)
+    position_tags = html.xpath('//*[@id="resultList"]/div/p/span/a/@title')
+    # print(position_tags)
+    abc = '51job'
+    text_create(abc,position_tags)
+
+def text_create(abc,position_tags):
+    desktop_path = r"D:\\pycham\\pytest\\scratches\\作业\\"  # 新创建的txt文件的存放路径
+
+    full_path = desktop_path + abc + '.txt'  # 也可以创建一个.doc的word文档
+
+    file = open(full_path, 'w',encoding='utf-8')
+    for position_tag in position_tags:
+
+        file.write(position_tag)  # msg也就是写入的内容
+
+
+
+
+def main():
+    # zhiwei = ['python','java','golang','c++','web前端','node.js','c#']
+    # chengshi = ['010000(北京)','020000(上海)']
+    url = 'https://search.51job.com/list/{},000000,0000,00,9,99,{},2,1.html?lang=c&stype=&postchannel=0000&workyear=99&cotype=99&degreefrom=99&jobterm=99&companysize=99&providesalary=99&lonlat=0%2C0&radius=-1&ord_field=0&confirmdate=9&fromType=&dibiaoid=0&address=&line=&specialarea=00&from=&welfare='
+
+    zhiwei = ['python']
+    chengshi = ['010000(北京)']
+
+    for y in range(len(chengshi)):
+        for x in range(len(zhiwei)):
+            abc = url.format(chengshi[y],zhiwei[x])
+            spider(abc,chengshi[y],zhiwei[x])
+
+
+
+if __name__ == '__main__':
+    main()
